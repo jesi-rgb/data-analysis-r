@@ -48,7 +48,7 @@ eval_knn = function(train_data, train_labels, test=NA, k_neighbors=seq(3, 41, by
   return(results)
 }
 
-eval_knn(hayes, hayes$Class)
+knnResults = eval_knn(hayes, hayes$Class)
 
 plot_list = list()
 i = 1
@@ -115,11 +115,17 @@ annotate_figure(
 )
 
 
-  
-                  
-                  
-                  
+# COMPARAR RESULTADOS DE LOS TRES ALGORITMOS.
+LDApredictions = data.frame(Prediction = predLDA$class, Reference = hayes$Class)
+LDAaccuracy = (LDApredictions %>% filter(Prediction == Reference) %>% count()) / dim(LDApredictions[,0])
 
+              
+QDApredictions = data.frame(Prediction = predQDA$class, Reference = hayes$Class)
+QDAaccuracy = (QDApredictions %>% filter(Prediction == Reference) %>% count()) / dim(QDApredictions[,0])
+
+QDAaccuracy
+LDAaccuracy
+knnResults
 
 
 
