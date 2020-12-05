@@ -2,8 +2,9 @@ library(tidyverse)
 library(ggpubr)
 library(class)
 library(caret)
+library(MASS)
 
-hayes = read.csv("hayes-roth.dat")
+hayes = read.csv("data/hayes-roth.dat")
 
 eval_knn = function(train_data, train_labels, test=NA, k_neighbors=seq(3, 41, by=2), verbose = 0){
   print("Starting evaluation of KNN")
@@ -77,4 +78,40 @@ for(k in seq(3, 25, by=2)){
 ggpubr::ggarrange(plotlist = plot_list)
 
 
-#### LDA
+#### LDA ####
+hayesLDA = lda(Class ~ Age + MaritalStatus + EducationalLevel, data = hayes)
+
+predLDA = predict(hayesLDA)
+
+plotDataLDA = data.frame(Classes = factor(hayes[,"Class"], c(1, 2, 3), c("Class 1", "Class 2", "No class")),
+                      LD1 = predLDA$x[,1], 
+                      LD2 = predLDA$x[,2])
+
+LDAplot = ggplot(plotDataLDA) + geom_point(aes(LD1, LD2, colour = Classes, shape = Classes), size = 10) +
+  scale_color_manual(values=c("#084c61", "#db3a34", "#ffc857"))
+
+
+#### QDA ####
+hayesQDA = qda(Class ~ Age + MaritalStatus + EducationalLevel, data = hayes)
+
+predQDA = predict(hayesQDA)
+
+plotDataQDA = data.frame(Classes = factor(hayes[,"Class"], c(1, 2, 3), c("Class 1", "Class 2", "No class")),
+                      QD1 = predQDA$posterior[,1], 
+                      QD2 = predQDA$posterior[,2],
+                      QD3 = predQDA$posterior[,3])
+
+QDAplot = ggplot(plotDataQDA) + geom_point(aes(QD1, QD2, alpha = QD3, colour = Classes, shape = Classes), size = 6) +
+  scale_color_manual(values=c("#084c61", "#db3a34", "#ffc857"))
+
+ggarrange(
+  annotate_figure(LDAplot, top = text_grob("Linear Discriminant for the HR dataset", face = "bold")),
+  annotate_figure(QDAplot, top = text_grob("Quadrant Discriminant for the HR dataset", face = "bold"))
+)
+
+
+
+
+
+
+
