@@ -87,8 +87,12 @@ plotDataLDA = data.frame(Classes = factor(hayes[,"Class"], c(1, 2, 3), c("Class 
                       LD1 = predLDA$x[,1], 
                       LD2 = predLDA$x[,2])
 
-LDAplot = ggplot(plotDataLDA) + geom_point(aes(LD1, LD2, colour = Classes, shape = Classes), size = 10) +
-  scale_color_manual(values=c("#084c61", "#db3a34", "#ffc857"))
+annotate_figure( 
+  ggplot(plotDataLDA) + geom_point(aes(LD1, LD2, colour = Classes, shape = Classes), size = 10) +
+    scale_color_manual(values=c("#084c61", "#db3a34", "#ffc857")),
+  
+  top = text_grob("Linear Discriminant for the HR dataset", face = "bold")
+)
 
 
 #### QDA ####
@@ -101,13 +105,21 @@ plotDataQDA = data.frame(Classes = factor(hayes[,"Class"], c(1, 2, 3), c("Class 
                       QD2 = predQDA$posterior[,2],
                       QD3 = predQDA$posterior[,3])
 
-QDAplot = ggplot(plotDataQDA) + geom_point(aes(QD1, QD2, alpha = QD3, colour = Classes, shape = Classes), size = 6) +
-  scale_color_manual(values=c("#084c61", "#db3a34", "#ffc857"))
 
-ggarrange(
-  annotate_figure(LDAplot, top = text_grob("Linear Discriminant for the HR dataset", face = "bold")),
-  annotate_figure(QDAplot, top = text_grob("Quadrant Discriminant for the HR dataset", face = "bold"))
+
+annotate_figure( 
+  ggplot(plotDataQDA) + geom_point(aes(QD1, QD2, alpha = QD3, colour = Classes, shape = Classes), size = 6) +
+    scale_color_manual(values=c("#084c61", "#db3a34", "#ffc857")),
+  
+  top = text_grob("Quadrant Discriminant for the HR dataset", face = "bold")
 )
+
+
+  
+                  
+                  
+                  
+
 
 
 
