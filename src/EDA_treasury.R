@@ -1,5 +1,7 @@
 library(tidyverse)
 library(moments)
+library(ggpubr)
+
 
 treasury = read.csv("data/treasury.dat")
 attach(treasury)
@@ -8,6 +10,7 @@ summary(treasury)
 str(treasury)
 
 apply(treasury, 2, skewness) # comprobamos skewness en todas las variables
+apply(treasury, 2, shapiro.test)
 dim(treasury) # comprobamos dimensiones
 
 gather_tr = treasury %>% gather() # primer boxplot exploratorio
@@ -30,3 +33,9 @@ ggplot(gather_tr_norm, aes(x=key, y=value)) +
 library(GGally)
 ggpairs(treasury_norm)
 
+# c("#177e89", "#084c61", "#db3a34", "#ffc857") color palette
+
+treasury_norm %>% gather %>% ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_density(color = "#084c61", fill = "#177e89", alpha = 0.8) +
+  labs(title="Map of the densities for the variables in Treasury")
