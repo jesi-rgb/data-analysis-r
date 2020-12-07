@@ -48,7 +48,7 @@ ggplot(treasury, aes(y = X1MonthCDRate, x = X3Y.CMaturityRate)) +
               color = "#ffc857", lwd=1.35, alpha=0.7)
 
 confint(lm_maturity)
-
+View(treasury)
 
 # against X30YCMortgageRate
 lm_mortgage = lm(X1MonthCDRate~X30Y.CMortgageRate, data=treasury)
