@@ -19,11 +19,11 @@ lm_money = lm(X1MonthCDRate~moneyStock, data=treasury)
 summary(lm_money)
 
 ggplot(treasury, aes(y = X1MonthCDRate, x = moneyStock)) +
-  geom_point(color = "#084c61") + 
   geom_abline(intercept = lm_money$coefficients[[1]], 
               slope = lm_money$coefficients[[2]], 
-              color = "#ffc857", lwd=1.35, alpha=0.7) +
-  geom_point(aes(fitted(lm_money)), color = "#db3a34", alpha = 0.5)
+              color = "#ffc857", lwd=1.35, alpha=0.9) +
+  geom_point(color = "#084c61") +
+  geom_point(aes(fitted(lm_money)), color = "#db3a34", alpha = 0.5) 
 
 confint(lm_money)
 
@@ -32,10 +32,11 @@ lm_second_market = lm(X1MonthCDRate~X3M.Rate.SecondaryMarket, data=treasury)
 summary(lm_second_market)
 
 ggplot(treasury, aes(y = X1MonthCDRate, x = X3M.Rate.SecondaryMarket)) +
-  geom_point(color = "#084c61") + 
   geom_abline(intercept = lm_second_market$coefficients[[1]], 
               slope = lm_second_market$coefficients[[2]], 
-              color = "#ffc857", lwd=1.35, alpha=0.7)
+              color = "#ffc857", lwd=1.35, alpha=0.7) +
+  geom_point(color = "#084c61") + 
+  geom_point(aes(fitted(lm_second_market)), color = "#db3a34", alpha = 0.5)
 
 confint(lm_second_market)
 
@@ -44,10 +45,11 @@ lm_maturity = lm(X1MonthCDRate~X3Y.CMaturityRate, data=treasury)
 summary(lm_maturity)
 
 ggplot(treasury, aes(y = X1MonthCDRate, x = X3Y.CMaturityRate)) +
-  geom_point(color = "#084c61") + 
   geom_abline(intercept = lm_maturity$coefficients[[1]], 
               slope = lm_maturity$coefficients[[2]], 
-              color = "#ffc857", lwd=1.35, alpha=0.7)
+              color = "#ffc857", lwd=1.35, alpha=0.7) +
+  geom_point(color = "#084c61") + 
+  geom_point(aes(fitted(lm_maturity)), color = "#db3a34", alpha = 0.5)
 
 confint(lm_maturity)
 
@@ -57,11 +59,12 @@ lm_mortgage = lm(X1MonthCDRate~X30Y.CMortgageRate, data=treasury)
 summary(lm_mortgage)
 
 ggplot(treasury, aes(y = X1MonthCDRate, x = X30Y.CMortgageRate)) +
-  geom_point(color = "#084c61") + 
   geom_abline(intercept = lm_mortgage$coefficients[[1]], 
               slope = lm_mortgage$coefficients[[2]], 
-              color = "#ffc857", lwd=1.35, alpha=0.7)
-
+              color = "#ffc857", lwd=1.35, alpha=0.7) +
+  geom_point(color = "#084c61") + 
+  geom_point(aes(fitted(lm_mortgage)), color = "#db3a34", alpha = 0.5)
+  
 confint(lm_mortgage)
 
 
@@ -107,8 +110,28 @@ sm_data %>% gather(key="variable", value="Accuracy", -Model) %>%
 
 
 #### Modelos no lineales e interacciones ####
-lm_
-            
+
+nlm_best = lm(X1MonthCDRate ~ moneyStock * X3Y.CMaturityRate * X3M.Rate.SecondaryMarket)
+summary(nlm_best)
+ggplot(treasury, aes(x=moneyStock * X3Y.CMaturityRate  * X3M.Rate.SecondaryMarket, y = X1MonthCDRate)) +
+  geom_point(color = "#084c61") +
+  geom_point(aes(fitted(nlm_best)), color="#ffc857")
+
+
+complex_formula = X30Y.CMortgageRate + moneyStock + X3Y.CMaturityRate + 
+  X3M.Rate.AuctionAverage +
+  I(1/loansLeases) * I(1/savingsDeposits) *
+  I(1/currency) * I(1/federalFunds)
+
+complex_model = lm(X1MonthCDRate ~ complex_formula)
+
+ggplot(treasury, aes(x=complex_formula, y = X1MonthCDRate)) +
+  geom_point(color = "#084c61") +
+  geom_point(aes(fitted(complex_model)), color="#ffc857") +
+  xlab("Comnbinación de todas las variables en complex_model")
+
+summary(complex_model)
+
 
 
 
