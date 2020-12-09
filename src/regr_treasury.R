@@ -14,7 +14,7 @@ attach(treasury)
 # vamos a probar modelos simples con moneyStock, X3MRateSecondaryMarket, 
 # X3YCMaturityRate y X30YCMortgageRate
 
-# against moneyStock
+#### against moneyStock ####
 lm_money = lm(X1MonthCDRate~moneyStock, data=treasury)
 summary(lm_money)
 
@@ -22,11 +22,12 @@ ggplot(treasury, aes(y = X1MonthCDRate, x = moneyStock)) +
   geom_point(color = "#084c61") + 
   geom_abline(intercept = lm_money$coefficients[[1]], 
               slope = lm_money$coefficients[[2]], 
-              color = "#ffc857", lwd=1.35, alpha=0.7)
+              color = "#ffc857", lwd=1.35, alpha=0.7) +
+  geom_point(aes(fitted(lm_money)), color = "#db3a34", alpha = 0.5)
 
 confint(lm_money)
 
-# against X3MRateSecondaryMarket
+#### against X3MRateSecondaryMarket ####
 lm_second_market = lm(X1MonthCDRate~X3M.Rate.SecondaryMarket, data=treasury)
 summary(lm_second_market)
 
@@ -38,7 +39,7 @@ ggplot(treasury, aes(y = X1MonthCDRate, x = X3M.Rate.SecondaryMarket)) +
 
 confint(lm_second_market)
 
-# against X3YCMaturityRate
+#### against X3YCMaturityRate ####
 lm_maturity = lm(X1MonthCDRate~X3Y.CMaturityRate, data=treasury)
 summary(lm_maturity)
 
@@ -51,7 +52,7 @@ ggplot(treasury, aes(y = X1MonthCDRate, x = X3Y.CMaturityRate)) +
 confint(lm_maturity)
 
 
-# against X30YCMortgageRate
+#### against X30YCMortgageRate ####
 lm_mortgage = lm(X1MonthCDRate~X30Y.CMortgageRate, data=treasury)
 summary(lm_mortgage)
 
@@ -68,21 +69,26 @@ confint(lm_mortgage)
 
 #### REGRESIÓN MÚLTIPLE #####
 
+#### lm all ####
 lm_all = lm(X1MonthCDRate~., data=treasury)
 sm_all = summary(lm_all)
 
+#### lm hypothesis ####
 lm_hypothesis = lm(X1MonthCDRate~X1Y.CMaturityRate+X3Y.CMaturityRate+
                      currency + moneyStock + tradeCurrencies, data=treasury)
 sm_hypothesis = summary(lm_hypothesis)
 
-
+#### lm best ####
 lm_best = lm(X1MonthCDRate~moneyStock+X30Y.CMortgageRate+ 
              X3Y.CMaturityRate+X3M.Rate.SecondaryMarket)
 sm_best = summary(lm_best)
 
+#### lm money maturity
 lm_money_maturity = lm(X1MonthCDRate~moneyStock+X3Y.CMaturityRate)
 sm_money_maturity = summary(lm_money_maturity)
 
+
+#### crear dataframe para ver las diferencias ####
 sm_data = data.frame(RSquared = c(sm_all$r.squared,
                                   sm_hypothesis$r.squared,
                                   sm_best$r.squared,
@@ -92,7 +98,6 @@ sm_data = data.frame(RSquared = c(sm_all$r.squared,
                                      sm_best$adj.r.squared,
                                      sm_money_maturity$adj.r.squared),
                      Model = c('All', 'Hypothetic', 'Best', 'Money+Maturity'))
-View(sm_data)
 
 sm_data %>% gather(key="variable", value="Accuracy", -Model) %>%
         ggplot(aes(fill=variable, y=Accuracy, x=Model)) + 
@@ -101,6 +106,8 @@ sm_data %>% gather(key="variable", value="Accuracy", -Model) %>%
             coord_cartesian(ylim=c(0.99, 0.996))
 
 
+#### Modelos no lineales e interacciones ####
+lm_
             
 
 
