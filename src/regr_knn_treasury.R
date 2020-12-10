@@ -13,7 +13,7 @@ attach(treasury)
 nombre <- "data/treasury-5-fold/treasury"
 
 #### LINEAR MODELS ####
-run_lm_fold <- function(i, x, tt = "test") {
+run_lm_fold <- function(i, x, tt = "test", formula = "Y~.") {
   file <- paste(x, "-5-", i, "tra.dat", sep="")
   x_tra <- read.csv(file, comment.char="@", header=FALSE)
   file <- paste(x, "-5-", i, "tst.dat", sep="")
@@ -29,14 +29,14 @@ run_lm_fold <- function(i, x, tt = "test") {
   else {
     test <- x_tst
   }
-  fitMulti=lm(Y~.,x_tra)
+  formula <- reformulate(formula)
+  fitMulti=lm(formula,x_tra)
   yprime=predict(fitMulti,test)
   sum(abs(test$Y-yprime)^2)/length(yprime) ##MSE
 }
 
 lmMSEtrain<-mean(sapply(1:5,run_lm_fold,nombre,"train"))
 lmMSEtest<-mean(sapply(1:5,run_lm_fold,nombre,"test"))
-
 
 #### KNN MODELS ####
 run_knn_fold <- function(i, x, tt = "test") {
@@ -62,7 +62,7 @@ run_knn_fold <- function(i, x, tt = "test") {
 
 knnMSEtrain <- mean(sapply(1:5,run_knn_fold,nombre,"train"))
 knnMSEtest <- mean(sapply(1:5,run_knn_fold,nombre,"test"))
-
+sapply(1:5,run_knn_fold,nombre,"test")
 
 #### leemos la tabla con los errores medios de test #### 
 resultados <- read.csv("data/regr_test_alumnos.csv")
